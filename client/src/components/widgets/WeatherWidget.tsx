@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   CloudSun,
@@ -8,17 +8,13 @@ import {
   CloudSnow,
   CloudFog,
   CloudLightning,
+  Search
 } from "lucide-react";
-import { Line } from "recharts";
-import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { RootState } from "@/store";
 import { fetchWeatherData, selectWeather } from "@/store/slices/weatherSlice";
-import { WeatherForecast } from "@/types";
-import { Search } from "lucide-react";
-import WidgetWrapper from "./WidgetWrapper";
+import { WidgetWrapper } from "./WidgetWrapper";
 import { LineChart } from "@/components/ui/chart";
 
 export function WeatherWidget() {
@@ -67,7 +63,7 @@ export function WeatherWidget() {
   const getWeatherIcon = (condition: string, large = false) => {
     const iconSize = large ? "h-12 w-12" : "h-6 w-6";
     
-    switch (condition.toLowerCase()) {
+    switch ((condition || "").toLowerCase()) {
       case "clear":
         return <Sun className={`${iconSize} text-yellow-500`} />;
       case "clouds":
@@ -155,7 +151,7 @@ export function WeatherWidget() {
             </div>
 
             <div className="mt-6 h-[200px]">
-              {chartData && (
+              {chartData && chartData.length > 0 && (
                 <LineChart
                   data={chartData}
                   categories={["temp"]}
