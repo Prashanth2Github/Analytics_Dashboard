@@ -3,6 +3,7 @@ import { RootState } from '../index';
 import { StockData, HistoricalDataPoint } from '@/types';
 
 const API_KEY = import.meta.env.VITE_ALPHA_VANTAGE_API_KEY || 'demo'; // Fallback to a demo key
+console.log('Using Alpha Vantage API Key:', API_KEY ? 'Key provided' : 'No key provided'); // Log if key is available
 
 interface FinanceState {
   stockData: Record<string, StockData>;
@@ -27,9 +28,11 @@ export const fetchStockData = createAsyncThunk(
   async (params: { symbol: string }, { rejectWithValue, dispatch }) => {
     try {
       const { symbol } = params;
+      console.log(`Fetching stock data for ${symbol} with API key: ${API_KEY ? 'Using provided key' : 'Using demo key'}`);
       
       // Fetch global quote for real-time data
       const globalQuoteUrl = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${API_KEY}`;
+      console.log('Fetching from URL:', globalQuoteUrl);
       const quoteResponse = await fetch(globalQuoteUrl);
       
       if (!quoteResponse.ok) {
@@ -37,16 +40,25 @@ export const fetchStockData = createAsyncThunk(
       }
       
       const quoteData = await quoteResponse.json();
+      console.log('Quote data received:', quoteData);
+      
+      // Check for API limit message
+      if (quoteData.Note) {
+        console.error('API limit reached:', quoteData.Note);
+        return rejectWithValue('Alpha Vantage API call frequency limit reached. Please try again in a minute.');
+      }
       
       // Check if we got valid data
       if (!quoteData['Global Quote'] || Object.keys(quoteData['Global Quote']).length === 0) {
-        return rejectWithValue(`No data available for ${symbol}`);
+        console.error('No quote data available for symbol:', symbol);
+        return rejectWithValue(`No data available for ${symbol}. Please verify the stock symbol.`);
       }
       
       const quote = quoteData['Global Quote'];
       
       // Fetch company overview for additional info
       const overviewUrl = `https://www.alphavantage.co/query?function=OVERVIEW&symbol=${symbol}&apikey=${API_KEY}`;
+      console.log('Fetching company overview from URL:', overviewUrl);
       const overviewResponse = await fetch(overviewUrl);
       
       if (!overviewResponse.ok) {
@@ -54,6 +66,13 @@ export const fetchStockData = createAsyncThunk(
       }
       
       const overviewData = await overviewResponse.json();
+      console.log('Overview data received:', overviewData);
+      
+      // Check for API limit message in overview response
+      if (overviewData.Note) {
+        console.error('API limit reached for overview:', overviewData.Note);
+        // Continue with limited data rather than fail
+      }
       
       // Default to 1 month time series data
       dispatch(toggleTimeRange({ symbol, timeRange: '1M' }));
@@ -63,16 +82,18 @@ export const fetchStockData = createAsyncThunk(
         companyName: overviewData.Name || symbol,
         exchange: overviewData.Exchange || 'Unknown',
         sector: overviewData.Sector || 'Unknown',
-        price: parseFloat(quote['05. price']),
-        change: parseFloat(quote['09. change']),
-        changePercent: parseFloat(quote['10. change percent'].replace('%', '')),
-        volume: parseInt(quote['06. volume']),
-        previousClose: parseFloat(quote['08. previous close']),
+        price: parseFloat(quote['05. price'] || '0'),
+        change: parseFloat(quote['09. change'] || '0'),
+        changePercent: parseFloat((quote['10. change percent'] || '0').replace('%', '')),
+        volume: parseInt(quote['06. volume'] || '0'),
+        previousClose: parseFloat(quote['08. previous close'] || '0'),
         marketCap: overviewData.MarketCapitalization ? parseInt(overviewData.MarketCapitalization) : 0,
       };
       
+      console.log('Processed stock data:', stockData);
       return stockData;
     } catch (error) {
+      console.error('Error fetching stock data:', error);
       if (error instanceof Error) {
         return rejectWithValue(error.message);
       }
@@ -89,6 +110,7 @@ export const toggleTimeRange = createAsyncThunk(
   ) => {
     try {
       const { symbol, timeRange } = params;
+      console.log(`Fetching time range data for ${symbol} with timeRange: ${timeRange}`);
       
       let interval = 'daily';
       let outputSize = 'compact';
@@ -119,6 +141,7 @@ export const toggleTimeRange = createAsyncThunk(
       }
       
       const url = `https://www.alphavantage.co/query?function=${timeSeriesFunction}&symbol=${symbol}&outputsize=${outputSize}&apikey=${API_KEY}`;
+      console.log('Fetching time series from URL:', url);
       
       const response = await fetch(url);
       if (!response.ok) {
@@ -126,6 +149,13 @@ export const toggleTimeRange = createAsyncThunk(
       }
       
       const data = await response.json();
+      console.log('Time series data received:', data);
+      
+      // Check for API limit message
+      if (data.Note) {
+        console.error('API limit reached for time series:', data.Note);
+        return rejectWithValue('Alpha Vantage API call frequency limit reached. Please try again in a minute.');
+      }
       
       // Handle different data formats based on interval
       let timeSeriesKey = 'Time Series (Daily)';
@@ -137,7 +167,14 @@ export const toggleTimeRange = createAsyncThunk(
       
       // Check if we got valid data
       if (!data[timeSeriesKey] || Object.keys(data[timeSeriesKey]).length === 0) {
-        return rejectWithValue(`No time series data available for ${symbol}`);
+        console.error('No time series data available for symbol:', symbol);
+        // Generate some minimal data for display rather than failing entirely
+        const fallbackData = {
+          symbol,
+          timeRange,
+          historicalData: []
+        };
+        return fallbackData;
       }
       
       // Parse historical data
@@ -178,8 +215,10 @@ export const toggleTimeRange = createAsyncThunk(
           limitedData = historicalData.slice(-30); // Default to 30 data points
       }
       
+      console.log(`Processed ${limitedData.length} historical data points for ${symbol}`);
       return { symbol, timeRange, historicalData: limitedData };
     } catch (error) {
+      console.error('Error fetching time series data:', error);
       if (error instanceof Error) {
         return rejectWithValue(error.message);
       }
