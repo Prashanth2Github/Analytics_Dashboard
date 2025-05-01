@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../index';
 
-const API_KEY = import.meta.env.VITE_NEWS_API_KEY || '9503d8e8a7a84a27acff4f845fdbdf20'; // Fallback to a demo key
+const API_KEY = import.meta.env.VITE_NEWS_API_KEY || 'ba28774a6b85483f85764f1768ca1ed2'; // Fallback to a demo key
 
 interface NewsArticle {
   title: string;

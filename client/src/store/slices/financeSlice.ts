@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../index';
 import { StockData, HistoricalDataPoint } from '@/types';
 
-const API_KEY = import.meta.env.VITE_ALPHA_VANTAGE_API_KEY || 'demo'; // Fallback to a demo key
+const API_KEY = import.meta.env.VITE_ALPHA_VANTAGE_API_KEY || '1QYV8VGABH45DC85'; // Fallback to a demo key
 console.log('Using Alpha Vantage API Key:', API_KEY ? 'Key provided' : 'No key provided'); // Log if key is available
 
 interface FinanceState {

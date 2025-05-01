@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../index';
 import { CurrentWeather, WeatherForecast } from '@/types';
 
-const API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY || 'bd5e378503939ddaee76f12ad7a97608'; // Fallback to a demo key
+const API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY || '49fcdea905e9267ac7fcdb839ad98acc'; // Fallback to a demo key
 
 interface WeatherState {
   current: CurrentWeather | null;
