@@ -199,7 +199,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 Your Name - [bonkuruprashanth05@gmail.com](mailto:bonkuruprashanth05@gmail.com)
 
-Project Link: [https://github.com/Prashanth2Github/analytics_dashboard](https://github.com/yourusername/analytics_dashboard)
+Project Link: [https://github.com/Prashanth2Github/analytics_dashboard](https://github.com/Prashanth2Github/analytics_dashboard)
 
 ## Acknowledgments
 
