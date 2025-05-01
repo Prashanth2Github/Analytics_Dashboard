@@ -1,6 +1,5 @@
 # Advanced Analytics Dashboard
 
-![Analytics Dashboard Screenshot](https://i.imgur.com/placeholder-for-your-screenshot.png)
 
 ## Project Overview
 
@@ -109,7 +108,7 @@ This comprehensive analytics dashboard is an advanced front-end application buil
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/analytics-dashboard.git
+   git clone https://github.com/Prashanth2Github/analytics-dashboard.git
    cd analytics-dashboard
    ```
 
@@ -198,9 +197,9 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Contact
 
-Your Name - [your.email@example.com](mailto:your.email@example.com)
+Your Name - [bonkuruprashanth05@gmail.com](mailto:bonkuruprashanth05@gmail.com)
 
-Project Link: [https://github.com/yourusername/analytics-dashboard](https://github.com/yourusername/analytics-dashboard)
+Project Link: [https://github.com/Prashanth2Github/analytics-dashboard](https://github.com/yourusername/analytics-dashboard)
 
 ## Acknowledgments
 
